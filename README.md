@@ -27,3 +27,5 @@ Steps of creating a laraval Projects
    php artisan make:seeder UsersTableSeeder
 9. Run seeder command
    php artisan db:seed
+10. Create a controller
+	php artisan make:controller Admin/Dashboard

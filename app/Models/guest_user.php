@@ -7,14 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class guest_user extends Model
 {
     //
-    protected $table = 'error_logs';
+    protected $table = 'guest_user';
     protected $fillable = [
         
-        'err_text', 
-        'file_path',
-        'method',
-        'parent_method' ,
-        'error_time' ,
-        'type'  
+        'name', 
+        'company_name',
+        'email',
+        'phone_no' ,
+        'address' ,
+        'created_at',
+        'updated_at'
     ];
 }

@@ -1,4 +1,7 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Headers: Origin, Content-Type, Authorization, X-Auth-Token');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 
 use Illuminate\Http\Request;
 
@@ -17,6 +20,14 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
- /***********MobileApp And WebApp Auth Api***************/
- Route::post('/registration', 'Auth\RegisterController@registration');
+ /*******************MobileApp And WebApp Auth Api******************/
+ /************************** Admin Api******************************/ 
+/*********************** Admin Login******************************/ 
  Route::post('/login', 'Auth\LoginController@login');
+
+ /*********************** Admin ******************************/ 
+ Route::get('/getDashboard', 'Admin\Dashboard@getDashboardData');
+
+
+  /************************** Registration Normal******************************/
+  Route::post('/registration', 'Auth\RegisterController@registration');
