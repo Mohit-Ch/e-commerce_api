@@ -26,7 +26,8 @@ class users extends Authenticatable
          'user_Name',
          'phone_no',
          'is_active',
-          'usertype'
+          'usertype',
+          'about_us'
     ];
     
 

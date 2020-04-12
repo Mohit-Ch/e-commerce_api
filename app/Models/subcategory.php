@@ -15,6 +15,7 @@ class subcategory extends Model
         'photo',
         'category_id',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'is_deleted'
     ];
 }

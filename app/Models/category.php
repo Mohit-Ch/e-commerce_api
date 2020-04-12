@@ -11,6 +11,7 @@ class category extends Model
     protected $fillable = [
         
         'category_name', 
-        'photo'       
+        'photo',
+        'is_deleted'       
     ];
 }

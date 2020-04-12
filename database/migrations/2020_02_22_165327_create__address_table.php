@@ -20,7 +20,7 @@ class CreateAddressTable extends Migration
             $table->string('address1');
             $table->string('address2')->nullable();
             $table->string('city',50);
-            $table->string('area');
+            $table->string('area')->nullable();
             $table->integer('postal_code')->length(6);
             $table->tinyinteger('is_default')->default(0);
             $table->foreign('users_id')->references('id')->on('users');

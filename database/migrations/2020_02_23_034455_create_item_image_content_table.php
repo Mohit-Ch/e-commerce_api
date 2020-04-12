@@ -16,10 +16,10 @@ class CreateItemImageContentTable extends Migration
         Schema::create('item_image_content', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('itemDetail_id')->unsigned();
-            $table->string('description');
-            $table->string('imageURL');
+            $table->string('description')->nullable();
+            $table->string('imageURL')->nullable();
             $table->string('size')->nullable();
-            $table->string('type');
+            $table->string('type')->nullable();
             $table->foreign('itemDetail_id')->references('id')->on('item_deatil');
             $table->timestamps();
         });

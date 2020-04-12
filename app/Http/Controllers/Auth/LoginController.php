@@ -46,7 +46,7 @@ class LoginController extends Controller
         $this->validateLogin($request);
         $Isnotificaion=1;
         $data = $request->all();
-        if (Auth::attempt(['email' => $data['email'], 'password' => $data['password'], 'usertype' => 'User', 'is_active' => 0])) {
+        if (Auth::attempt(['email' => $data['email'], 'password' => $data['password'], 'usertype' => 'Admin', 'is_active' => 0])) {
             $photoURL = url("user_photos");
             $users = $this->guard()->user();
             

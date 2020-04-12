@@ -14,6 +14,8 @@ class order_detail extends Model
         'order_id', 
         'itemedition_id',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'quantity',
+        'price'
     ];
 }

@@ -24,7 +24,7 @@ class Dashboard extends Controller
         if(!empty($data))
         {
             $userdata = users::where(['api_token'=>$data['api_token'],'usertype'=>"Admin"])->first();
-            if(!empty($data))
+            if(!empty($userdata))
             {
                 
                 // Pending Order List 
@@ -92,7 +92,7 @@ class Dashboard extends Controller
 
                 //  Find heighest Offers Is runnning
                 $datetime=Carbon\Carbon::now();
-                $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->first();
+                $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
 
                 // makedata to send
                 $data['promocode']=$activePromocode;
@@ -101,6 +101,71 @@ class Dashboard extends Controller
                 $data['newUserCount']=$newUserCount;
                 $data['newCountOrder']=$newCountOrder;
                 $data['OrderList']=$newOrderArrayList;
+                $rt['code'] =  200; 
+                $rt['status'] = 'success';
+                $rt['data']= $data;
+            }
+            else{
+                 // Status 202 Is  used for User not Valid
+                  $rt['code'] =  202; 
+                  $rt['status'] = 'error';
+                }
+        }
+        else{
+        // Status 201 Is request data is not presetnt
+            $rt['code'] =  201; 
+            $rt['status'] = 'error';
+        }
+	    return response()->json($rt);
+    }
+    
+      // Admin Dashboard  Get Data
+	public function getTopBarData(Request $request)
+    {
+        //  Definreturn jason data id any error occured
+        $rt['code'] =  203; 
+        $rt['status'] = 'error';
+        // Get Request Data
+        $data = $request->all();
+        if(!empty($data))
+        {
+            $userdata = users::where(['api_token'=>$data['api_token'],'usertype'=>"Admin"])->first();
+            if(!empty($data))
+            {
+                
+                // Pending Order List 
+                $pendingOrderList = order:: where('status','placed')->get()->toArray();
+               
+                //  Find count of Pandong Orders
+                $newCountOrder=0;
+               
+                if(!empty($newOrderList)){
+                    $newCountOrder= count($newOrderList);
+                }
+                
+                
+                // Find List Of new Users
+                $NewUserList=users::where(['is_active'=>0,'usertype'=>'User'])->get()->toArray();
+                $newUserCount=0;
+              
+
+                //  Find count of New Users
+                if(!empty($NewUserList)){
+                    $newUserCount=count($NewUserList);
+                }
+               
+                //  Find Active users count
+                $activeUsercount=users::where(['is_active'=>1,'usertype'=>'User'])->count();
+
+                //  Find heighest Offers Is runnning
+                $datetime=Carbon\Carbon::now();
+                $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
+
+                // makedata to send
+                $data['promocode']=$activePromocode;
+                $data['registerUserCount']=$activeUsercount;
+                $data['newUserCount']=$newUserCount;
+                $data['newCountOrder']=$newCountOrder;
                 $rt['code'] =  200; 
                 $rt['status'] = 'success';
                 $rt['data']= $data;

@@ -26,8 +26,6 @@ class CreateItemDeatilTable extends Migration
             $table->decimal('weight')->nullable(); 
             $table->integer('dimensionUnit')->nullable();
             $table->integer('wtUnit')->nullable(); 
-            $table->foreign('category_id')->references('id')->on('category');
-            $table->foreign('subcategory_id')->references('id')->on('subcategory');
             $table->foreign('user_id')->references('id')->on('users'); 
             $table->timestamps();
         });
