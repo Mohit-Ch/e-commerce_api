@@ -13,6 +13,7 @@ use App\Models\item_image_content;
 use App\Models\subcategory;
 use Image;
 use File;
+use Carbon;
 class ProductController extends Controller
 {
     // Save product
@@ -103,24 +104,35 @@ class ProductController extends Controller
             {
                 foreach($data['imageList'] as $edit)
                 {  $destinationPath = public_path('temp_image');
-                    $destinationPathnew = public_path('Product_image').'\\'.$edit['imageName'];
+                    $datetime=Carbon\Carbon::now();   
+                    $name=str_replace(" ","_",$data['ProductName']);            
+                    $imagename=$name."_".$edit['imageName'];
+                    $destinationFolder = public_path('Product_image').'\\'.$itemdetailid;
+                    $destinationPathnew= $destinationFolder.'\\'.$imagename;
                     $full_path_before=$destinationPath.'\\'.$edit['imageName'];
                     if($edit['id']==0){
                         $additemEditi = new item_image_content;
                         $additemEditi->itemDetail_id = $itemdetailid;
-                        $additemEditi->imageURL = $edit['imageName'];
+                        $additemEditi->imageURL =$itemdetailid.'/'.$imagename;
                         $additemEditi->type = $edit['image_type'];
-                        $additemEditi->imageString = $edit['imageUrl'];
+                       // $additemEditi->imageString = $edit['imageUrl'];
                         $additemEditi->save();
-                        if (File::exists($full_path_before)){
-                            File::move($full_path_before,$destinationPathnew);
-                         }
+                        if(File::exists($destinationFolder)){
+                            if (File::exists($full_path_before)){
+                                File::move($full_path_before,$destinationPathnew);
+                            }
+                        }
+                        else{
+                            File::makeDirectory($destinationFolder);
+                            if (File::exists($full_path_before)){
+                                File::move($full_path_before,$destinationPathnew);
+                            }
+                        }
                     }
                     else{
                         item_image_content::where('id',$edit['id'])->update(
-                            ['imageURL'=>$edit['imageName'],
-                            'type'=>$edit['image_type'],
-                            'imageString'=>$edit['imageUrl']]);
+                            ['imageURL'=>$itemdetailid.'/'.$imagename,
+                            'type'=>$edit['image_type']]);
                         if (!File::exists($destinationPathnew)){
                             if (File::exists($full_path_before)){
                                 File::move($full_path_before,$destinationPathnew);
@@ -163,6 +175,11 @@ class ProductController extends Controller
             {
                 foreach($data['RemoveImage'] as $edit)
                 {
+                   $item_image=  item_image_content::where('id',$edit)->first();
+                    $image_path = public_path('Product_image').'\\'.$item_image['imageURL'];
+                    if(File::exists($image_path)) {
+                        File::delete($image_path);
+                    }
                     item_image_content::where('id',$edit)->delete();
                 }
             }
@@ -213,13 +230,13 @@ class ProductController extends Controller
                         
                             $destinationPath = public_path('/temp_image');
                             $img = Image::make($image->getRealPath());
-                            $img->resize(1000, 1000, function ($constraint) {
+                            $img->resize(500, 500, function ($constraint) {
                                 $constraint->aspectRatio();
                                 })->save($destinationPath.'/'.$input['imagename']);
                     }
                    
                    
-                    $data['imagepath']=url($destinationPath.'/'.$input['imagename']);
+                    $data['imagepath']=url('temp_image/'.$input['imagename']);
                     $data['imageName']=$input['imagename'];
                     $rt['code'] =  200; 
                     $rt['status'] = 'success';
@@ -261,11 +278,24 @@ class ProductController extends Controller
                 $Itemedition = item_edition:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
                 $ItemInfo = item_details_attributes:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
                 $ItemImage = item_image_content:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
+                $ItemImageList=[];
+                if( !empty($ItemImage) ){
+                    foreach($ItemImage as $item)
+                    {
+
+                        $image=[];
+                        $image["itemDetail_id"]=$item["itemDetail_id"];
+                        $image["imageURL"]=url('Product_image/'.$item["imageURL"]) ; 
+                        $image["type"]=$item["type"];
+                        $image["id"]=$item["id"];
+                        array_push($ItemImageList,$image);
+                    }
+                }
 
                 $data['itemDetail']=$ItemDetail;
                 $data['itemedition']=$Itemedition;
                 $data['itemInfo']=$ItemInfo;
-                $data['itemImage']=$ItemImage;
+                $data['itemImage']=$ItemImageList;
                  $rt['code'] =  200; 
                  $rt['status'] = 'success';
                  $rt['data'] = $data;
@@ -339,7 +369,7 @@ class ProductController extends Controller
                          $ItemImage = item_image_content:: where(['itemDetail_id'=>$item['id'],'type'=>'Main'])->first();
                          if(!empty($ItemImage))
                          {
-                            $data["imageurl"]=$ItemImage["imageString"];
+                            $data["imageurl"]= url('Product_image/'.$ItemImage['imageURL']);
                          }else{
                             $data["imageurl"]="";
                          }

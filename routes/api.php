@@ -52,5 +52,6 @@ use Illuminate\Http\Request;
  Route::get('/getproductData', 'Admin\ProductController@getproductData');  
  Route::get('/getproductList', 'Admin\ProductController@getproductList'); 
  Route::post('/Saveproductdelete', 'Admin\ProductController@Saveproductdelete');   
+ Route::get('/getUserActiveList', 'Admin\UsersController@getUserActiveList');
   /************************** Registration Normal******************************/
   Route::post('/registration', 'Auth\RegisterController@registration');

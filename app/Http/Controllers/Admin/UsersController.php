@@ -242,4 +242,72 @@ class UsersController extends Controller
         }
         return response()->json($rt);
     }
+
+    public function getUserActiveList(Request $request)
+    {
+        //  Definreturn jason data id any error occured
+        $rt['code'] =  203; 
+        $rt['status'] = 'error';
+        // Get Request Data
+        $data = $request->all();
+        if(!empty($data))
+        {
+            $userdata = users::where(['api_token'=>$data['api_token'],'usertype'=>"Admin"])->first();
+            if(!empty($userdata))
+            {
+                
+                // Find count of Pandong Orders
+                $newCountOrder = order:: where('status','placed')->count();
+
+                // Find List Of new Users
+                $NewUserList=users::where(['is_active'=>1,'usertype'=>'User'])->get()->toArray();
+                $newUserCount=0;
+                $newUserArrayList=[];
+
+                //  Find count of New Users
+                if(!empty($NewUserList)){
+                    $newUserCount=count($NewUserList);
+                    $i=1;
+                    foreach($NewUserList as $newU)
+                    {
+                        $newUserArray['s_no']=$i;
+                        $newUserArray['id']=$newU['id'];
+                        $newUserArray['name']=$newU['name'];
+                        $newUserArray['phone_no']=$newU['phone_no'];
+                        $newUserArray['company_name']=$newU['company_name'];
+                        $i++;
+                        array_push($newUserArrayList,$newUserArray);
+                    }
+                }
+               
+                //  Find Active users count
+                $activeUsercount=users::where(['is_active'=>1,'usertype'=>'User'])->count();
+
+                //  Find heighest Offers Is runnning
+                $datetime=Carbon\Carbon::now();
+                $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
+
+                // makedata to send
+                $data['promocode']=$activePromocode;
+                $data['registerUserCount']=$activeUsercount;
+                $data['newUserList']=$newUserArrayList;
+                $data['newUserCount']=$newUserCount;
+                $data['newCountOrder']=$newCountOrder;
+                $rt['code'] =  200; 
+                $rt['status'] = 'success';
+                $rt['data']= $data;
+            }
+            else{
+                 // Status 202 Is  used for User not Valid
+                  $rt['code'] =  202; 
+                  $rt['status'] = 'error';
+                }
+        }
+        else{
+        // Status 201 Is request data is not presetnt
+            $rt['code'] =  201; 
+            $rt['status'] = 'error';
+        }
+        return response()->json($rt);
+    }
 }
