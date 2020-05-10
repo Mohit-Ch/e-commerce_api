@@ -94,6 +94,9 @@ class Dashboard extends Controller
                 $datetime=Carbon\Carbon::now();
                 $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
 
+                 //  Find Active users count
+                 $conformorder = order:: where('status','conformed')->count();
+
                 // makedata to send
                 $data['promocode']=$activePromocode;
                 $data['registerUserCount']=$activeUsercount;
@@ -101,6 +104,7 @@ class Dashboard extends Controller
                 $data['newUserCount']=$newUserCount;
                 $data['newCountOrder']=$newCountOrder;
                 $data['OrderList']=$newOrderArrayList;
+                $data['conformorder']=$conformorder;
                 $rt['code'] =  200; 
                 $rt['status'] = 'success';
                 $rt['data']= $data;
@@ -156,7 +160,8 @@ class Dashboard extends Controller
                
                 //  Find Active users count
                 $activeUsercount=users::where(['is_active'=>1,'usertype'=>'User'])->count();
-
+                //  Find Active users count
+                $conformorder = order:: where('status','conformed')->count();
                 //  Find heighest Offers Is runnning
                 $datetime=Carbon\Carbon::now();
                 $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
@@ -166,6 +171,7 @@ class Dashboard extends Controller
                 $data['registerUserCount']=$activeUsercount;
                 $data['newUserCount']=$newUserCount;
                 $data['newCountOrder']=$newCountOrder;
+                $data['conformorder']=$conformorder;
                 $rt['code'] =  200; 
                 $rt['status'] = 'success';
                 $rt['data']= $data;

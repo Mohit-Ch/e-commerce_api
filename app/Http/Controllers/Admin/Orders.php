@@ -87,12 +87,16 @@ class Orders extends Controller
                 $datetime=Carbon\Carbon::now();
                 $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
 
+                //  Find Active users count
+                $conformorder = order:: where('status','conformed')->count();
+                
                 // makedata to send
                 $data['promocode']=$activePromocode;
                 $data['registerUserCount']=$activeUsercount;
                 $data['newUserCount']=$newUserCount;
                 $data['newCountOrder']=$newCountOrder;
                 $data['OrderList']=$newOrderArrayList;
+                $data['conformorder']=$conformorder;
                 $rt['code'] =  200; 
                 $rt['status'] = 'success';
                 $rt['data']= $data;
@@ -179,12 +183,16 @@ class Orders extends Controller
                  $datetime=Carbon\Carbon::now();
                  $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
  
+                   //  Find Active users count
+                $conformorder = order:: where('status','conformed')->count();
+
                  // makedata to send
                  $data['promocode']=$activePromocode;
                  $data['registerUserCount']=$activeUsercount;
                  $data['newUserCount']=$newUserCount;
                  $data['newCountOrder']=$newCountOrder;
                  $data['OrderList']=$conformOrderArrayList;
+                 $data['conformorder']=$conformorder;
                  $rt['code'] =  200; 
                  $rt['status'] = 'success';
                  $rt['data']= $data;
@@ -272,12 +280,16 @@ class Orders extends Controller
                  $datetime=Carbon\Carbon::now();
                  $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
  
+                  //  Find Active users count
+                $conformorder = order:: where('status','conformed')->count();
+
                  // makedata to send
                  $data['promocode']=$activePromocode;
                  $data['registerUserCount']=$activeUsercount;
                  $data['newUserCount']=$newUserCount;
                  $data['newCountOrder']=$newCountOrder;
                  $data['OrderList']=$OrderArrayList;
+                 $data['conformorder']=$conformorder;
                  $rt['code'] =  200; 
                  $rt['status'] = 'success';
                  $rt['data']= $data;

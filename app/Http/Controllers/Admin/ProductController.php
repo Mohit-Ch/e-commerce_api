@@ -102,37 +102,42 @@ class ProductController extends Controller
 
             if(!empty($data['imageList']))
             {
-                foreach($data['imageList'] as $edit)
+                foreach($data['imageList'] as $edit_image)
                 {  $destinationPath = public_path('temp_image');
                     $datetime=Carbon\Carbon::now();   
                     $name=str_replace(" ","_",$data['ProductName']);            
-                    $imagename=$name."_".$edit['imageName'];
-                    $destinationFolder = public_path('Product_image').'\\'.$itemdetailid;
-                    $destinationPathnew= $destinationFolder.'\\'.$imagename;
-                    $full_path_before=$destinationPath.'\\'.$edit['imageName'];
-                    if($edit['id']==0){
+                    $imagename=$name."_".$edit_image['imageName'];
+                    $destinationFolder = public_path('Product_image').'/'.$itemdetailid;
+                    $destinationPathnew= $destinationFolder.'/'.$imagename;
+                    $full_path_before=$destinationPath.'/'.$edit_image['imageName'];
+                    if($edit_image['id']==0){
                         $additemEditi = new item_image_content;
                         $additemEditi->itemDetail_id = $itemdetailid;
                         $additemEditi->imageURL =$itemdetailid.'/'.$imagename;
-                        $additemEditi->type = $edit['image_type'];
+                        $additemEditi->type = $edit_image['image_type'];
                        // $additemEditi->imageString = $edit['imageUrl'];
                         $additemEditi->save();
                         if(File::exists($destinationFolder)){
                             if (File::exists($full_path_before)){
                                 File::move($full_path_before,$destinationPathnew);
+                                
                             }
                         }
                         else{
                             File::makeDirectory($destinationFolder);
+                           
                             if (File::exists($full_path_before)){
+                              
                                 File::move($full_path_before,$destinationPathnew);
+                                
                             }
                         }
+                       
                     }
                     else{
-                        item_image_content::where('id',$edit['id'])->update(
+                        item_image_content::where('id',$$edit_image['id'])->update(
                             ['imageURL'=>$itemdetailid.'/'.$imagename,
-                            'type'=>$edit['image_type']]);
+                            'type'=>$$edit_image['image_type']]);
                         if (!File::exists($destinationPathnew)){
                             if (File::exists($full_path_before)){
                                 File::move($full_path_before,$destinationPathnew);
@@ -175,6 +180,7 @@ class ProductController extends Controller
             {
                 foreach($data['RemoveImage'] as $edit)
                 {
+                    
                    $item_image=  item_image_content::where('id',$edit)->first();
                     $image_path = public_path('Product_image').'\\'.$item_image['imageURL'];
                     if(File::exists($image_path)) {
@@ -236,7 +242,7 @@ class ProductController extends Controller
                     }
                    
                    
-                    $data['imagepath']=url('temp_image/'.$input['imagename']);
+                    $data['imagepath']=url('public/temp_image/'.$input['imagename']);
                     $data['imageName']=$input['imagename'];
                     $rt['code'] =  200; 
                     $rt['status'] = 'success';
@@ -285,7 +291,7 @@ class ProductController extends Controller
 
                         $image=[];
                         $image["itemDetail_id"]=$item["itemDetail_id"];
-                        $image["imageURL"]=url('Product_image/'.$item["imageURL"]) ; 
+                        $image["imageURL"]=url('public/Product_image/'.$item["imageURL"]) ; 
                         $image["type"]=$item["type"];
                         $image["id"]=$item["id"];
                         array_push($ItemImageList,$image);
@@ -369,7 +375,7 @@ class ProductController extends Controller
                          $ItemImage = item_image_content:: where(['itemDetail_id'=>$item['id'],'type'=>'Main'])->first();
                          if(!empty($ItemImage))
                          {
-                            $data["imageurl"]= url('Product_image/'.$ItemImage['imageURL']);
+                            $data["imageurl"]= url('public/Product_image/'.$ItemImage['imageURL']);
                          }else{
                             $data["imageurl"]="";
                          }

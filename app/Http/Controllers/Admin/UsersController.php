@@ -58,12 +58,16 @@ class UsersController extends Controller
                  $datetime=Carbon\Carbon::now();
                  $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
  
+                 //  Find Active users count
+                $conformorder = order:: where('status','conformed')->count();
+
                  // makedata to send
                  $data['promocode']=$activePromocode;
                  $data['registerUserCount']=$activeUsercount;
                  $data['newUserList']=$newUserArrayList;
                  $data['newUserCount']=$newUserCount;
                  $data['newCountOrder']=$newCountOrder;
+                 $data['conformorder']=$conformorder;
                  $rt['code'] =  200; 
                  $rt['status'] = 'success';
                  $rt['data']= $data;
@@ -192,9 +196,6 @@ class UsersController extends Controller
             if(!empty($userdata))
             {
                 users::where(['api_token'=>$data['api_token'],'usertype'=>'Admin' ])->update([
-                    'name'=>$data['UserName'],
-                    'email'=>$data['email'],
-                    'company_name'=>$data['company_name'],
                     'about_us'=>$data['about_us'],
                     'phone_no'=>$data['phone_no']]);
               if($data['address_id']!=0){
@@ -204,9 +205,7 @@ class UsersController extends Controller
                         address::where('id',$data['address_id'])->update([
                             'country'=>$data['country'],
                             'address1'=>$data['address1'],
-                            'address2'=>$data['address2'],
                             'city'=>$data['city'],
-                            'area'=>$data['area'],
                             'postal_code'=>$data['postal_code']
                         ]);
 
@@ -219,7 +218,6 @@ class UsersController extends Controller
                     'users_id' => $userdata['id'],
                     'country' => $data['country'],
                     'address1'=>$data['address1'],
-                    'address2'=>$data['address2'],
                     'city'=>$data['city'],
                     'postal_code'=>$data['postal_code'],
                     'is_default'=>0
@@ -287,12 +285,16 @@ class UsersController extends Controller
                 $datetime=Carbon\Carbon::now();
                 $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
 
+                 //  Find Active users count
+                 $conformorder = order:: where('status','conformed')->count();
+
                 // makedata to send
                 $data['promocode']=$activePromocode;
                 $data['registerUserCount']=$activeUsercount;
                 $data['newUserList']=$newUserArrayList;
                 $data['newUserCount']=$newUserCount;
                 $data['newCountOrder']=$newCountOrder;
+                $data['conformorder']=$conformorder;
                 $rt['code'] =  200; 
                 $rt['status'] = 'success';
                 $rt['data']= $data;

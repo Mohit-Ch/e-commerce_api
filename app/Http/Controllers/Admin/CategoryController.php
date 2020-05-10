@@ -143,7 +143,7 @@ class CategoryController extends Controller
                 $categorydata = category:: where('id',$datarequest['id'])->first();
                 $category["id"]=$categorydata['id'];
                 $category["category_name"]=$categorydata['category_name'];
-                $category["photo"]= url('category_media/' . $categorydata['photo']);
+                $category["photo"]= url('public/category_media/' . $categorydata['photo']);
 
                  $rt['code'] =  200; 
                  $rt['status'] = 'success';
@@ -187,7 +187,7 @@ class CategoryController extends Controller
                         $category["s_no"]=$i;
                         $category["id"]=$cat['id'];
                         $category["category_name"]=$cat['category_name'];
-                        $category["photo"]= url('category_media/' . $cat['photo']);
+                        $category["photo"]= url('public/category_media/' . $cat['photo']);
                         array_push($catList,$category);
                         $i++;
                     }
