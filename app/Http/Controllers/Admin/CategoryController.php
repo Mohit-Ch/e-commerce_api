@@ -79,7 +79,7 @@ class CategoryController extends Controller
                                 {
                                     if($categorydata['photo']!=null && $categorydata['photo']!="")
                                     { 
-                                        $destinationPath = public_path('category_media\\');
+                                        $destinationPath = public_path('category_media//');
                                         $image_path = $destinationPath.$categorydata['photo']; 
                                        //dd($image_path); // Value is not URL but directory file path
                                             if(File::exists($image_path)) {
