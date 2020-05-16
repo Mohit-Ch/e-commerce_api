@@ -76,4 +76,39 @@ class LoginController extends Controller
         //dd($request);
         return $this->sendFailedLoginResponse($request);
     }
+
+    public function Userlogin(Request $request) {
+        $this->validateLogin($request);
+        $Isnotificaion=1;
+        $data = $request->all();
+        if (Auth::attempt(['email' => $data['email'], 'password' => $data['password'], 'usertype' => 'User', 'is_active' => 0])) {
+            $photoURL = url("user_photos");
+            $users = $this->guard()->user();
+            
+            $users->generateToken();            
+            $userId = $users->id;
+           
+            $userData = $users->toArray();
+            if ($userData['photo']) {
+                $temp = $userData['photo'];
+                $userData['photo'] = $photoURL . "/" . $temp;
+            }
+            return response()->json([
+                        'data' => $userData,
+                        'code'=> 100,
+                        'status' => 'success'
+            ]);
+        }
+         else 
+        {
+               return response()->json([
+                            'message' => 'Login Email or Password are incorrect',
+                            'code'=> 101,
+                            'status' => 'error'
+                ]);
+        }
+        
+        //dd($request);
+        return $this->sendFailedLoginResponse($request);
+    }
 }

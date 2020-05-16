@@ -56,5 +56,22 @@ use Illuminate\Http\Request;
  Route::post('/savepromocode', 'Admin\OffersController@savepromocode');  
  Route::get('/getpromocodeData', 'Admin\OffersController@getpromocodeData');  
  Route::get('/getpromocodeList', 'Admin\OffersController@getpromocodeList'); 
+
   /************************** Registration Normal******************************/
-  Route::post('/registration', 'Auth\RegisterController@registration');
+  Route::post('mobileapp/registration', 'Auth\RegisterController@registration');
+
+
+   /************************** User login******************************/
+   Route::post('mobileapp/Userlogin', 'Auth\LoginController@Userlogin');
+
+
+   /************************** Mobile App******************************/
+   Route::get('mobileapp/getCategoryList', 'MobileApp\HomeController@getCategoryList');
+   Route::get('mobileapp/getSubCategoryList', 'MobileApp\HomeController@getSubCategoryList'); 
+   Route::get('mobileapp/getproductList', 'MobileApp\HomeController@getproductList');
+   Route::get('mobileapp/getproductData', 'MobileApp\HomeController@getproductData');
+   Route::get('mobileapp/getproductSearch', 'MobileApp\HomeController@getproductSearch');   
+
+   /************************** error_log******************************/
+   Route::post("/error_log", "Auth\ErrorLogController@ErrorLog");
+
