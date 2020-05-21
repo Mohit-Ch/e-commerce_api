@@ -21,6 +21,8 @@ class order extends Model
         'actual_amount',
         'address_id',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'deviceId'
+        
     ];
 }

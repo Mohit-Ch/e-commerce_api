@@ -17,6 +17,7 @@ class item_edition extends Model
         'remark',
         'status',
         'created_at',
-        'updated_at'
+        'reserveq',
+
     ];
 }

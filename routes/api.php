@@ -71,7 +71,12 @@ use Illuminate\Http\Request;
    Route::get('mobileapp/getproductList', 'MobileApp\HomeController@getproductList');
    Route::get('mobileapp/getproductData', 'MobileApp\HomeController@getproductData');
    Route::get('mobileapp/getproductSearch', 'MobileApp\HomeController@getproductSearch');   
-
+   Route::post('mobileapp/getOrderDetail', 'MobileApp\OrderController@getOrderDetail');  
+   Route::get('mobileapp/couponcodeValid', 'MobileApp\OrderController@couponcodeValid');    
+   Route::get('mobileapp/getAddressList', 'MobileApp\OrderController@getAddressList'); 
+   Route::get('mobileapp/CheckEmailExist', 'MobileApp\OrderController@CheckEmailExist');  
+   Route::post('mobileapp/SetReserveQuantity', 'MobileApp\OrderController@SetReserveQuantity');  
+   Route::post('mobileapp/placeOrder', 'MobileApp\OrderController@placeOrder');  
    /************************** error_log******************************/
    Route::post("/error_log", "Auth\ErrorLogController@ErrorLog");
 
