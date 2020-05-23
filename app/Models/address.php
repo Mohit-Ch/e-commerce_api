@@ -13,7 +13,7 @@ class address extends Model
         'users_id', 
         'address1',
         'address2',
-        'country','city','area','postal_code','is_default'
+        'country','city','area','postal_code','is_default','name','email','phone_no','company_name'
        
     ];
 }
