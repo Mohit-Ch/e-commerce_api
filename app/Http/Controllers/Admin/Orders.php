@@ -38,35 +38,50 @@ class Orders extends Controller
                 //  Find count of Pandong Orders
                 $newCountOrder=0;
                
-                if(!empty($newOrderList)){
-                    $newCountOrder= count($newOrderList);
-                    $i=1;
-                    foreach($newOrderList as $newOrder)
-                    {
-                        $newOrderArray['order_Id']=$newOrder['id'];
-                        $newOrderArray['s_no']=$i;
-                        $newOrderArray['order_no']=$newOrder['order_no'];
-                        $newOrderArray['user_id']=$newOrder['user_id'];
-                        $newOrderArray['amount']=$newOrder['user_id'];
-                       $type=$newOrder['type']; 	
-                        if($type=='user')
-                        {
-                        $UserOrder=users::where(['id'=>$newOrderArray['user_id'],'is_active'=>1,'usertype'=>'User'])->first();
-                        $newOrderArray['userName']=$UserOrder['name'];
-                        $newOrderArray['phone_no']=$UserOrder['phone_no'];
-                        $newOrderArray['usertype']='Registered';
-                        $UserAddress=address::where(['users_id'=>$newOrderArray['user_id'],'id'=>$newOrder['address_id']])->first();
-                        $newOrderArray['address']=$UserAddress['address1'] +" "+ $UserAddress['address2'] +" "+$UserAddress['area'] +" "+$UserAddress['city'] +" "+$UserAddress['country'] +" "+$UserAddress['postal_code'];
-                        }
-                        else{
-                            $UserOrder=guest_user::where('id',$newOrderArray['user_id'])->first();
-                            $newOrderArray['userName']=$UserOrder['name'];
-                            $newOrderArray['phone_no']=$UserOrder['phone_no'];
-                            $newOrderArray['usertype']='Gest User';
-                            $newOrderArray['address']=$UserOrder['address'];
+                if ( !empty( $pendingOrderList ) ) {
+                    $newCountOrder = count( $pendingOrderList );
+                    $i = 1;
+                    foreach ( $pendingOrderList as $newOrder ) {
+                        $newOrderArray['order_Id'] = $newOrder['id'];
+                        $newOrderArray['s_no'] = $i;
+                        $newOrderArray['order_no'] = $newOrder['order_no'];
+                        $newOrderArray['user_id'] = $newOrder['user_id'];
+                        $newOrderArray['amount'] = $newOrder['actual_amount'];
+                        $type = $newOrder['type'];
+
+                        $newOrderArray['address'] = $newOrder['address'];
+                        if ( $type == 'user' ) {
+                            $UserOrder = users::where( ['id'=>$newOrderArray['user_id'], 'usertype'=>'User'] )->first();
+                            if ( !empty( $UserOrder ) ) {
+                                $newOrderArray['userName'] = $newOrder['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$newOrder['name'];
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Registered';
+                                $UserAddress = address::where( ['users_id'=>$newOrderArray['user_id'], 'id'=>$newOrder['address_id']] )->first();
+                               }
+                            else{
+                                $newOrderArray['userName'] = $newOrder['name'] ;
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $newOrder['address'];
+                            }
+                        } else {
+                            $UserOrder = guest_user::where( 'id', $newOrderArray['user_id'] )->first();
+                            if( !empty( $UserOrder ) ){
+                                $newOrderArray['userName'] = $newOrder['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$newOrder['name'] ;
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $newOrder['address'] == null?$UserOrder['address']:$newOrder['address'];
+                            }
+                            else{
+                                $newOrderArray['userName'] = $newOrder['name'] ;
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $newOrder['address'];
+                            }
+                           
                         }
                         $i++;
-                        array_push($newCountOrder,$newOrderArray);
+                        array_push( $newOrderArrayList, $newOrderArray );
                     }
                 }
                 
@@ -135,36 +150,52 @@ class Orders extends Controller
                  //  Find count of Pandong Orders
                  $newCountOrder=order:: where('status','placed')->count();
                 
-                 if(!empty($newOrderList)){
-                     $i=1;
-                     foreach($conformOrderList as $Order)
-                     {
-                         $OrderArray['order_Id']=$Order['id'];
-                         $OrderArray['s_no']=$i;
-                         $OrderArray['order_no']=$Order['order_no'];
-                         $OrderArray['user_id']=$Order['user_id'];
-                         $OrderArray['amount']=$Order['user_id'];
-                        $type=$Order['type']; 	
-                         if($type=='user')
-                         {
-                         $UserOrder=users::where(['id'=>$OrderArray['user_id'],'is_active'=>1,'usertype'=>'User'])->first();
-                         $newOrderArray['userName']=$UserOrder['name'];
-                         $newOrderArray['phone_no']=$UserOrder['phone_no'];
-                         $newOrderArray['usertype']='Registered';
-                         $UserAddress=address::where(['users_id'=>$OrderArray['user_id'],'id'=>$Order['address_id']])->first();
-                         $newOrderArray['address']=$UserAddress['address1'] +" "+ $UserAddress['address2'] +" "+$UserAddress['area'] +" "+$UserAddress['city'] +" "+$UserAddress['country'] +" "+$UserAddress['postal_code'];
-                         }
-                         else{
-                             $UserOrder=guest_user::where('id',$OrderArray['user_id'])->first();
-                             $OrderArray['userName']=$UserOrder['name'];
-                             $OrderArray['phone_no']=$UserOrder['phone_no'];
-                             $OrderArray['usertype']='Gest User';
-                             $OrderArray['address']=$UserOrder['address'];
-                         }
-                         $i++;
-                         array_push($conformOrderArrayList,$OrderArray);
-                     }
-                 }
+                 if ( !empty( $conformOrderList ) ) {
+                   // $newCountOrder = count( $pendingOrderList );
+                    $i = 1;
+                    foreach ( $conformOrderList as $newOrder ) {
+                        $newOrderArray['order_Id'] = $newOrder['id'];
+                        $newOrderArray['s_no'] = $i;
+                        $newOrderArray['order_no'] = $newOrder['order_no'];
+                        $newOrderArray['user_id'] = $newOrder['user_id'];
+                        $newOrderArray['amount'] = $newOrder['actual_amount'];
+                        $type = $newOrder['type'];
+
+                        $newOrderArray['address'] = $newOrder['address'];
+                        if ( $type == 'user' ) {
+                            $UserOrder = users::where( ['id'=>$newOrderArray['user_id'], 'usertype'=>'User'] )->first();
+                            if ( !empty( $UserOrder ) ) {
+                                $newOrderArray['userName'] = $newOrder['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$newOrder['name'];
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Registered';
+                                $UserAddress = address::where( ['users_id'=>$newOrderArray['user_id'], 'id'=>$newOrder['address_id']] )->first();
+                               }
+                            else{
+                                $newOrderArray['userName'] = $newOrder['name'] ;
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $newOrder['address'];
+                            }
+                        } else {
+                            $UserOrder = guest_user::where( 'id', $newOrderArray['user_id'] )->first();
+                            if( !empty( $UserOrder ) ){
+                                $newOrderArray['userName'] = $newOrder['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$newOrder['name'] ;
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $newOrder['address'] == null?$UserOrder['address']:$newOrder['address'];
+                            }
+                            else{
+                                $newOrderArray['userName'] = $newOrder['name'] ;
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $newOrder['address'];
+                            }
+                           
+                        }
+                        $i++;
+                        array_push( $conformOrderArrayList, $newOrderArray );
+                    }
+                }
                  
                  
                  // Find List Of new Users
@@ -232,36 +263,52 @@ class Orders extends Controller
                  //  Find count of Pandong Orders
                  $newCountOrder=order:: where('status','placed')->count();
                 
-                 if(!empty($newOrderList)){
-                     $i=1;
-                     foreach($OrderList as $Order)
-                     {
-                         $OrderArray['order_Id']=$Order['id'];
-                         $OrderArray['s_no']=$i;
-                         $OrderArray['order_no']=$Order['order_no'];
-                         $OrderArray['user_id']=$Order['user_id'];
-                         $OrderArray['amount']=$Order['user_id'];
-                        $type=$Order['type']; 	
-                         if($type=='user')
-                         {
-                         $UserOrder=users::where(['id'=>$OrderArray['user_id'],'is_active'=>1,'usertype'=>'User'])->first();
-                         $newOrderArray['userName']=$UserOrder['name'];
-                         $newOrderArray['phone_no']=$UserOrder['phone_no'];
-                         $newOrderArray['usertype']='Registered';
-                         $UserAddress=address::where(['users_id'=>$OrderArray['user_id'],'id'=>$Order['address_id']])->first();
-                         $newOrderArray['address']=$UserAddress['address1'] +" "+ $UserAddress['address2'] +" "+$UserAddress['area'] +" "+$UserAddress['city'] +" "+$UserAddress['country'] +" "+$UserAddress['postal_code'];
-                         }
-                         else{
-                             $UserOrder=guest_user::where('id',$OrderArray['user_id'])->first();
-                             $OrderArray['userName']=$UserOrder['name'];
-                             $OrderArray['phone_no']=$UserOrder['phone_no'];
-                             $OrderArray['usertype']='Gest User';
-                             $OrderArray['address']=$UserOrder['address'];
-                         }
-                         $i++;
-                         array_push($OrderArrayList,$OrderArray);
-                     }
-                 }
+                 if ( !empty( $OrderList ) ) {
+                   // $newCountOrder = count( $pendingOrderList );
+                    $i = 1;
+                    foreach ( $OrderList as $newOrder ) {
+                        $newOrderArray['order_Id'] = $newOrder['id'];
+                        $newOrderArray['s_no'] = $i;
+                        $newOrderArray['order_no'] = $newOrder['order_no'];
+                        $newOrderArray['user_id'] = $newOrder['user_id'];
+                        $newOrderArray['amount'] = $newOrder['actual_amount'];
+                        $type = $newOrder['type'];
+
+                        $newOrderArray['address'] = $newOrder['address'];
+                        if ( $type == 'user' ) {
+                            $UserOrder = users::where( ['id'=>$newOrderArray['user_id'], 'usertype'=>'User'] )->first();
+                            if ( !empty( $UserOrder ) ) {
+                                $newOrderArray['userName'] = $newOrder['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$newOrder['name'];
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Registered';
+                                $UserAddress = address::where( ['users_id'=>$newOrderArray['user_id'], 'id'=>$newOrder['address_id']] )->first();
+                               }
+                            else{
+                                $newOrderArray['userName'] = $newOrder['name'] ;
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $newOrder['address'];
+                            }
+                        } else {
+                            $UserOrder = guest_user::where( 'id', $newOrderArray['user_id'] )->first();
+                            if( !empty( $UserOrder ) ){
+                                $newOrderArray['userName'] = $newOrder['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$newOrder['name'] ;
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $newOrder['address'] == null?$UserOrder['address']:$newOrder['address'];
+                            }
+                            else{
+                                $newOrderArray['userName'] = $newOrder['name'] ;
+                                $newOrderArray['phone_no'] = $newOrder['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $newOrder['address'];
+                            }
+                           
+                        }
+                        $i++;
+                        array_push( $OrderArrayList, $newOrderArray );
+                    }
+                }
                  
                  
                  // Find List Of new Users
@@ -379,23 +426,37 @@ class Orders extends Controller
                     $oredertail['product_amount']=$Order['product_amount'];
                     $oredertail['actual_amount']=$Order['actual_amount'];
 
-                    // find UserData 
-                    if($Order['type']=='user')
-                    {
-                    $UserOrder=users::where(['id'=>$OrderArray['user_id'],'is_active'=>1,'usertype'=>'User'])->first();
-                    $oredertail['userName']=$UserOrder['name'];
-                    $oredertail['phone_no']=$UserOrder['phone_no'];
-                    $oredertail['usertype']='Registered';
-                    $UserAddress=address::where(['users_id'=>$OrderArray['user_id'],'id'=>$Order['address_id']])->first();
-                    $oredertail['address']=$UserAddress['address1'] +" "+ $UserAddress['address2'] +" "+$UserAddress['area'] +" "+$UserAddress['city'] +" "+$UserAddress['country'] +" "+$UserAddress['postal_code'];
-                    }
-                    else{
-                        $UserOrder=guest_user::where('id',$OrderArray['user_id'])->first();
-                        $oredertail['userName']=$UserOrder['name'];
-                        $oredertail['phone_no']=$UserOrder['phone_no'];
-                        $oredertail['usertype']='Gest User';
-                        $oredertail['address']=$UserOrder['address'];
-                    }
+                    $newOrderArray['address'] = $Order['address'];
+                        if ( $Order['type'] == 'user' ) {
+                            $UserOrder = users::where( ['id'=>$Order['user_id'], 'usertype'=>'User'] )->first();
+                            if ( !empty( $UserOrder ) ) {
+                                $newOrderArray['userName'] = $Order['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$Order['name'];
+                                $newOrderArray['phone_no'] = $Order['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$Order['phone_no'];
+                                $newOrderArray['usertype'] = 'Registered';
+                                $UserAddress = address::where( ['users_id'=>$Order['user_id'], 'id'=>$Order['address_id']] )->first();
+                               }
+                            else{
+                                $newOrderArray['userName'] = $Order['name'] ;
+                                $newOrderArray['phone_no'] = $Order['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $Order['address'];
+                            }
+                        } else {
+                            $UserOrder = guest_user::where( 'id', $Order['user_id'] )->first();
+                            if( !empty( $UserOrder ) ){
+                                $newOrderArray['userName'] = $Order['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$Order['name'] ;
+                                $newOrderArray['phone_no'] = $Order['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$Order['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $Order['address'] == null?$UserOrder['address']:$Order['address'];
+                            }
+                            else{
+                                $newOrderArray['userName'] = $Order['name'] ;
+                                $newOrderArray['phone_no'] = $Order['phone_no'];
+                                $newOrderArray['usertype'] = 'Gest User';
+                                $newOrderArray['address'] = $Order['address'];
+                            }
+                           
+                        }
 
                     // find Item Detail 
                     $OrderDetail = order_detail::where('order_id',$data['id'])->get()->toArray();
@@ -405,7 +466,7 @@ class Orders extends Controller
                       
                         foreach($OrderDetail as $OrderD)
                         {
-                             $orderItem="";
+                             
                             if(!empty($OrderD))
                             {
                                 $itemeditiion = item_edition::where('id',$OrderD['itemedition_id'])->first(); 
@@ -414,12 +475,12 @@ class Orders extends Controller
                                     $orderItem['quantity']=$OrderD['quantity'];
                                     $orderItem['price']=$OrderD['price'];
                                     $orderItem['itemEditionName']=$itemeditiion['itemEditionName'];
-                                    $item = item_edition::where('id',$itemeditiion['itemDetail_id'])->first(); 
+                                    $item = item_deatil::where('id',$itemeditiion['itemDetail_id'])->first(); 
                                     $orderItem['itemName']=$item['itemName'];
 
                                     $itemImage = item_image_content::where(['itemDetail_id'=>$itemeditiion['itemDetail_id'],'type'=>'main'])->first();    
                                     if(!empty($itemImage))  {                              
-                                    $orderItem['imageURL']= url('item_Image/' . $itemImage['imageURL']);
+                                    $orderItem['imageURL']= url('public/item_Image/' . $itemImage['imageURL']);
                                     }
                                     else
                                     {
