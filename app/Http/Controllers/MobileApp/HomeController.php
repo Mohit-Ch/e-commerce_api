@@ -21,7 +21,7 @@ class HomeController extends Controller
         $rt['code'] =  203; 
         $rt['status'] = 'error';
                ///category_media
-               $categoryList = category::where('is_deleted',0)->get()->toArray();
+               $categoryList = category::where('is_deleted',0)->orderBy('category_name', 'asc')->get()->toArray();
                $catList=[];
                if(!empty($categoryList)){
                   $i=1;
@@ -67,7 +67,7 @@ class HomeController extends Controller
            if($datarequest!=null)
            {
                   ///sub category List
-                  $subcategoryList = subcategory::where(['is_deleted'=>0,'category_id'=>$datarequest['category_id']])->get()->toArray();
+                  $subcategoryList = subcategory::where(['is_deleted'=>0,'category_id'=>$datarequest['category_id']])->orderBy('category_name', 'asc')->get()->toArray();
                   $catList=[];
                   if(!empty($subcategoryList)){
                      $i=1;
@@ -110,7 +110,7 @@ class HomeController extends Controller
                 // category_media
                 $ItemDetail=[];
                 if($datarequest['category_id']!=0 && $datarequest['subcategory_id']!=0 ){
-                  $ItemDetail = item_deatil:: where(['status'=>0,'category_id'=>$datarequest['category_id'],'subcategory_id'=>$datarequest['subcategory_id']])->get()->toArray();
+                  $ItemDetail = item_deatil:: where(['status'=>0,'category_id'=>$datarequest['category_id'],'subcategory_id'=>$datarequest['subcategory_id']])->orderBy('itemName', 'asc')->get()->toArray();
                 }
                 else
                 {
@@ -195,7 +195,7 @@ class HomeController extends Controller
                  $ItemDetail = item_deatil:: where('id',$datarequest['id'])->first();
                  $Itemedition = item_edition:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
                  $ItemInfo = item_details_attributes:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
-                 $ItemImage = item_image_content:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
+                 $ItemImage = item_image_content:: where('itemDetail_id',$datarequest['id'])->orderBy('type', 'asc')->get()->toArray();
                  $ItemImageList=[];
                  if( !empty($ItemImage) ){
                      foreach($ItemImage as $item)
