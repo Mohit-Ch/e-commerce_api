@@ -79,6 +79,8 @@ use Illuminate\Http\Request;
    Route::post('mobileapp/placeOrder', 'MobileApp\OrderController@placeOrder');  
    Route::post('mobileapp/RevertReserveQuantity', 'MobileApp\OrderController@RevertReserveQuantity');  
    Route::get('mobileapp/CheckAddressExist', 'MobileApp\OrderController@CheckAddressExist');  
+
+   Route::post('mobileapp/ContectUsemail', 'MobileApp\ContectController@sendemail');  
    /************************** error_log******************************/
    Route::post("/error_log", "Auth\ErrorLogController@ErrorLog");
 

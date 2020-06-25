@@ -23,11 +23,9 @@ class HomeController extends Controller
                ///category_media
                $categoryList = category::where('is_deleted',0)->orderBy('category_name', 'asc')->get()->toArray();
                $catList=[];
-               if(!empty($categoryList)){
-                  $i=1;
+               if(!empty($categoryList)){                 
                   foreach($categoryList as $cat)
                   {
-                      $category["s_no"]=$i;
                       $category["id"]=$cat['id'];
                       $category["ISsubCategory"]=false;
                       $category["Isproduct"]=false;
@@ -47,7 +45,6 @@ class HomeController extends Controller
                       $category["category_name"]=$cat['category_name'];
                       $category["photo"]= url('public/category_media/' . $cat['photo']);
                       array_push($catList,$category);
-                      $i++;
                   }
               }
                 $rt['code'] =  200; 

@@ -103,7 +103,8 @@ class OrderController extends Controller {
         if ( $datarequest != null ) {
 
             $mytime = Carbon\Carbon::now();
-            $promocodedata = promocode:: where( 'code', $datarequest['code'] )->whereRaw( '"'.$mytime.'" between `start_date` and `End_date`' )->first();
+            $code=strtolower($datarequest['code']);
+            $promocodedata = promocode:: whereRaw( 'lower(code) like (?)', [trim(strtolower($code)).'%'] )->whereRaw( '"'.$mytime.'" between `start_date` and `End_date`' )->first();
             if ( !empty( $promocodedata ) ) {
                 $promocode['id'] = $promocodedata['id'];
                 $promocode['amount'] = $promocodedata['amount'];
@@ -343,6 +344,26 @@ class OrderController extends Controller {
                     $CodeId = $Coupondata['id'];
                 }
 
+                // Check Item in cart quantity
+                if(!empty($datarequest['cartList']))
+                {
+                    foreach ( $datarequest['cartList'] as $item ) {
+
+                        $ItemDetail = item_deatil:: where( ['status'=>0, 'id'=>$item['itemId']] )->first();
+                        if ( !empty( $ItemDetail ) ) {
+                            $itemedition = item_edition:: where( ['itemDetail_id'=>$ItemDetail['id'], 'id'=>$item['itemeditionId']] )->where('quantity','<',$item['quantity'])->first();
+                            if ( !empty( $itemedition ) ){
+                                DB::commit();
+                                $rt['code'] =  205;
+                                $rt['status'] = 'error';
+                                $rt['message'] = 'one  product have not enough quantity available to place order';  
+                                return response()->json( $rt );
+                            }
+                        }
+                    }
+
+                }
+
                 // Insert Order in Ordertable
                 // PatterOfOrderNo is GH and 10 digit of rendam alpha numeri string
                 $Address = $datarequest['address1'].', '.$datarequest['city'].', '.$datarequest['country'].', '.$datarequest['postal_code'];
@@ -382,7 +403,7 @@ class OrderController extends Controller {
                             ] );
 
                             item_edition::where( 'id', $itemedition['id'] )->update(
-                                ['reserveq'=>0]
+                                ['quantity'=>$itemedition['quantity']-$item['quantity']]
                             );
 
                         }
