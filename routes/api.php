@@ -80,7 +80,14 @@ use Illuminate\Http\Request;
    Route::post('mobileapp/RevertReserveQuantity', 'MobileApp\OrderController@RevertReserveQuantity');  
    Route::get('mobileapp/CheckAddressExist', 'MobileApp\OrderController@CheckAddressExist');  
 
-   Route::post('mobileapp/ContectUsemail', 'MobileApp\ContectController@sendemail');  
+   Route::post('mobileapp/ContectUsemail', 'MobileApp\ContectController@sendemail');   
+   Route::get('mobileapp/AboutUsInfo', 'MobileApp\ContectController@AboutUsInfo');
+
+   Route::post('mobileapp/password/email', 'Auth\ForgotPasswordController@getResetToken');
+   Route::post('mobileapp/password/forget', 'Auth\ForgotPasswordController@generateNewPassword');
+   Route::post('mobileapp/password/reset', 'Auth\ResetPasswordController@reset');
+
+   Route::get('mobileapp/getPastOrder', 'MobileApp\PastOrderController@getPendingOrder');
    /************************** error_log******************************/
    Route::post("/error_log", "Auth\ErrorLogController@ErrorLog");
 

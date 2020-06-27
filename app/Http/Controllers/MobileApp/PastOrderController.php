@@ -15,6 +15,8 @@ use App\Models\item_deatil;
 use App\Models\item_edition;
 use App\Models\item_image_content;
 use URL;
+use App\Models\category;
+use App\Models\subcategory;
 class PastOrderController extends Controller
 {
   
@@ -28,105 +30,105 @@ class PastOrderController extends Controller
          $data = $request->all();
          if(!empty($data))
          {
-             $userdata = users::where(['api_token'=>$data['api_token'],'usertype'=>"Admin"])->first();
-             if(!empty($userdata))
+            $userdata;
+             if($data['api_token']!="")
              {
-                 
-                 // Pending Order List 
-                 $pendingOrderList = order:: where('status','placed')->get()->toArray();
-                 $newOrderArrayList=[];
-                 //  Find count of Pandong Orders
-                 $newCountOrder=0;
-                
-                 if ( !empty( $pendingOrderList ) ) {
-                     $newCountOrder = count( $pendingOrderList );
-                     $i = 1;
-                     foreach ( $pendingOrderList as $newOrder ) {
-                         $newOrderArray['order_Id'] = $newOrder['id'];
-                         $newOrderArray['s_no'] = $i;
-                         $newOrderArray['order_no'] = $newOrder['order_no'];
-                         $newOrderArray['user_id'] = $newOrder['user_id'];
-                         $newOrderArray['amount'] = $newOrder['actual_amount'];
-                         $type = $newOrder['type'];
- 
-                         $newOrderArray['address'] = $newOrder['address'];
-                         if ( $type == 'user' ) {
-                             $UserOrder = users::where( ['id'=>$newOrderArray['user_id'], 'usertype'=>'User'] )->first();
-                             if ( !empty( $UserOrder ) ) {
-                                 $newOrderArray['userName'] = $newOrder['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$newOrder['name'];
-                                 $newOrderArray['phone_no'] = $newOrder['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$newOrder['phone_no'];
-                                 $newOrderArray['usertype'] = 'Registered';
-                                 $UserAddress = address::where( ['users_id'=>$newOrderArray['user_id'], 'id'=>$newOrder['address_id']] )->first();
+             $userdata = users::where(['api_token'=>$data['api_token'],'usertype'=>"Admin"])->first();
+             }
+              // Get order 
+              $OrderList;
+              $productList=[];
+              if(!empty($userdata))
+              {
+                $OrderList = order:: where(['user_id'=>$userdata['id'],'deviceId'=>$data['deviceId']])->get()->toArray();
+              }else{
+                $OrderList = order:: where(['deviceId'=>$data['deviceId']])->get()->toArray();
+              }
+              if(empty($OrderList))
+              {
+                $rt['code'] =  202; 
+                $rt['status'] = 'error';
+                $rt['message'] = 'No previous order peresnt';
+              }
+              else{
+                   // find OrderDetail
+                   foreach ( $OrderList as $List )
+                   {
+                        $OrderDetailList = order_detail:: where('order_id',$List['id'])->get()->toArray();
+                        if(!empty($OrderDetailList))
+                        {
+                            foreach ( $OrderDetailList as $ListDetail ){
+                                $itemEdition = item_edition:: where('id',$ListDetail['itemedition_id'])->first();
+                                if(!empty($itemEdition))
+                                {
+                                    $item = item_deatil:: where('id',$itemEdition['itemDetail_id'])->first();
+                                    $itemimage = item_image_content:: where(['itemDetail_id'=>$itemEdition['itemDetail_id'],'type'=>'Main'])->first();
+
+                                    $data=[];
+                                    $data["itemName"]=$item["itemName"];
+                                    $data["EditionType"]=$item["EditionType"];
+                                    $data["id"]=$item["id"];
+                                    $data["quantity"]=$ListDetail["quantity"];
+                                    $data["price"]=$ListDetail["price"];
+                                    if(!empty($itemEdition))
+                                    {
+                                        $data["Edition"]=$itemEdition;
+                                    }
+                                    else{
+                                        $data["Edition"]=[]; 
+                                    }
+                                    $category=category:: where('id',$item['category_id'])->first();
+                                    if(!empty($category))
+                                    {
+                                        $data["categoryName"]=$category['category_name'];
+                                    }
+                                    else{
+                                        $data["categoryName"]="";
+                                    }
+                                
+                                    if($item['subcategory_id']!=0)
+                                    {
+                                        $Subcategory=subcategory:: where('id',$item['subcategory_id'])->first();
+                                        if(!empty($Subcategory))
+                                        {
+                                        $data["subcategoryName"]=$Subcategory['category_name'];
+                                        }else{
+                                            $data["subcategoryName"]="";
+                                        }
+            
+                                    }else{
+                                        $data["subcategoryName"]="";
+                                    }
+                                    if(!empty($itemimage))
+                                    {
+                                    // $data["imageurl"]= url('public/Product_image/'.$itemimage['imageURL']);
+                                    $data["imageurl"]= url('Product_image/'.$itemimage['imageURL']);
+                                    }else{
+                                        $data["imageurl"]="";
+                                    }
+                                    array_push($productList,$data);
                                 }
-                             else{
-                                 $newOrderArray['userName'] = $newOrder['name'] ;
-                                 $newOrderArray['phone_no'] = $newOrder['phone_no'];
-                                 $newOrderArray['usertype'] = 'Gest User';
-                                 $newOrderArray['address'] = $newOrder['address'];
-                             }
-                         } else {
-                             $UserOrder = guest_user::where( 'id', $newOrderArray['user_id'] )->first();
-                             if( !empty( $UserOrder ) ){
-                                 $newOrderArray['userName'] = $newOrder['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$newOrder['name'] ;
-                                 $newOrderArray['phone_no'] = $newOrder['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$newOrder['phone_no'];
-                                 $newOrderArray['usertype'] = 'Gest User';
-                                 $newOrderArray['address'] = $newOrder['address'] == null?$UserOrder['address']:$newOrder['address'];
-                             }
-                             else{
-                                 $newOrderArray['userName'] = $newOrder['name'] ;
-                                 $newOrderArray['phone_no'] = $newOrder['phone_no'];
-                                 $newOrderArray['usertype'] = 'Gest User';
-                                 $newOrderArray['address'] = $newOrder['address'];
-                             }
-                            
-                         }
-                         $i++;
-                         array_push( $newOrderArrayList, $newOrderArray );
-                     }
-                 }
+                                
+                            }
+                        
+                        }
+                   }
+            }
+            
                  
-                 
-                 // Find List Of new Users
-                 $NewUserList=users::where(['is_active'=>0,'usertype'=>'User'])->get()->toArray();
-                 $newUserCount=0;
- 
-                 //  Find count of New Users
-                 if(!empty($NewUserList)){
-                     $newUserCount=count($NewUserList);
-                 }
-                
-                 //  Find Active users count
-                 $activeUsercount=users::where(['is_active'=>1,'usertype'=>'User'])->count();
- 
-                 //  Find heighest Offers Is runnning
-                 $datetime=Carbon\Carbon::now();
-                 $activePromocode=promocode::where('start_date','<=',$datetime)->where('end_date','>=',$datetime)->count();
- 
-                 //  Find Active users count
-                 $conformorder = order:: where('status','conformed')->count();
-                 
-                 // makedata to send
-                 $data['promocode']=$activePromocode;
-                 $data['registerUserCount']=$activeUsercount;
-                 $data['newUserCount']=$newUserCount;
-                 $data['newCountOrder']=$newCountOrder;
-                 $data['OrderList']=$newOrderArrayList;
-                 $data['conformorder']=$conformorder;
+               
+               
+               
+                 $rt['data']=$productList;
                  $rt['code'] =  200; 
                  $rt['status'] = 'success';
-                 $rt['data']= $data;
-             }
+            }
              else{
                   // Status 202 Is  used for User not Valid
                    $rt['code'] =  202; 
                    $rt['status'] = 'error';
                  }
-         }
-         else{
-         // Status 201 Is request data is not presetnt
-             $rt['code'] =  201; 
-             $rt['status'] = 'error';
-         }
+         
          return response()->json($rt);
      }
 }

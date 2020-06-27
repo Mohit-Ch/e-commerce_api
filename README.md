@@ -29,3 +29,5 @@ Steps of creating a laraval Projects
    php artisan db:seed
 10. Create a controller
 	php artisan make:controller Admin/Dashboard
+11. For mail send
+    php artisan make:mail Product

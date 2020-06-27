@@ -22,7 +22,12 @@ class order extends Model
         'address_id',
         'created_at',
         'updated_at',
-        'deviceId'
+        'deviceId',
+        'name',
+        'email',
+        'phone_no',
+        'company_name',
+        'address'
         
     ];
 }
