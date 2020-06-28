@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Mail;
 use App\Models\users;
 use App\Models\address;
+use App\Models\company_detail;
 class ContectController extends Controller
 {
     //
@@ -39,26 +40,37 @@ class ContectController extends Controller
     }
 
     public function AboutUsInfo(Request $request) {
-        $Userdata = users::where( ['usertype'=>'Admin' ] )->first();
+        $companydetail = company_detail::get()->toArray();
         $User;
-        if(!empty($Userdata) )
+        if(!empty($companydetail) )
         {
-            $AddressListData = address::where( 'users_id', $Userdata['id'] )->first();
-            if(!empty($AddressListData)){
-                $User['address']=$AddressListData;
-            }
-            else{
-                $User['address']=" ";
-            }
-            $User['phone_no']= $Userdata["phone_no"];
-            $User['about_us']= $Userdata["about_us"];
-            
+            $User['companydetail']=$companydetail;
         }
           
             return response()->json([                        
                         'code'=> 100,
                         'status' => 'success',
                         'data'=>$User
+            ]);
+      
+      
+    }
+
+    public function getLogo(Request $request) {
+       
+            $data;
+            $companydetail = company_detail::where( 'Key', 'logo' )->first();
+            if(!empty($companydetail)){
+                //  $data["logo"]= url('public/company_logo/'.$companydetail['value']);
+                $data['logo']=url('company_logo/'.$companydetail['value']);
+            }
+            else{
+              //  $data['logo']="http://golden-handle.com/logo.png";
+            }
+            return response()->json([                        
+                        'code'=> 100,
+                        'status' => 'success',
+                        'data'=>$data
             ]);
       
       

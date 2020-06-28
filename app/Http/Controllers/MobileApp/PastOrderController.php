@@ -38,7 +38,7 @@ class PastOrderController extends Controller
               // Get order 
               $OrderList;
               $productList=[];
-              if(!empty($userdata))
+              if($data['api_token']!="")
               {
                 $OrderList = order:: where(['user_id'=>$userdata['id'],'deviceId'=>$data['deviceId']])->get()->toArray();
               }else{

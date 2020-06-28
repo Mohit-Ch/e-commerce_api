@@ -88,6 +88,8 @@ use Illuminate\Http\Request;
    Route::post('mobileapp/password/reset', 'Auth\ResetPasswordController@reset');
 
    Route::get('mobileapp/getPastOrder', 'MobileApp\PastOrderController@getPendingOrder');
+
+   Route::get('mobileapp/getlogo', 'MobileApp\ContectController@getLogo');
    /************************** error_log******************************/
    Route::post("/error_log", "Auth\ErrorLogController@ErrorLog");
 

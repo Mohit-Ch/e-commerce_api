@@ -282,13 +282,22 @@ class OrderController extends Controller {
                     }
                 } else {
                     if ( $datarequest['createLogin'] == true ) {
+                        $Userdata1 = users::where( ['email'=>$datarequest['email']] )->first();
+                        if(!empty($Userdata1))
+                        {
+                            DB::commit();
+                            $rt['code'] =  206;
+                            $rt['status'] = 'error';
+                            $rt['message'] = 'Email already taken. please try another email!';  
+                            return response()->json( $rt );
+
+                        }
                         $user = users::create( [
                             'name' => $datarequest['name'],
                             'email' => $datarequest['email'],
                             'password' => bcrypt( $datarequest['password'] ),
                             'phone_no' => $datarequest['Phone'],
-                            'is_active' => 0,
-                            'about_us' => '',
+                            'is_active' => 1,
                             'usertype' => 'User',
                             'user_Name'=>$datarequest['email'],
                             'company_name'=>$datarequest['companyName']
