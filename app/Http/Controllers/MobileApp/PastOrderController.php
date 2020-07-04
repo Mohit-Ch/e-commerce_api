@@ -33,7 +33,7 @@ class PastOrderController extends Controller
             $userdata;
              if($data['api_token']!="")
              {
-             $userdata = users::where(['api_token'=>$data['api_token'],'usertype'=>"Admin"])->first();
+             $userdata = users::where(['api_token'=>$data['api_token']])->first();
              }
               // Get order 
               $OrderList;

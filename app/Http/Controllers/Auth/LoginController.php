@@ -59,12 +59,6 @@ class LoginController extends Controller
                 $temp = $userData['photo'];
                 $userData['photo'] = $photoURL . "/" . $temp;
             }
-            // Mail::send(['html'=>'email'], 
-            //     ['status' => 1,'username'=>$userData['email']], function($message) use ($userData) {
-            //      $sub = 'Your Application is Rejected for ';
-            //     $message->to($userData['email'])->subject($sub);
-            //     $message->from('admin@gmial.com','data');
-            //   });
             return response()->json([
                         'data' => $userData,
                         'code'=> 100,

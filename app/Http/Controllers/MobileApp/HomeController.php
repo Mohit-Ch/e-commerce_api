@@ -32,14 +32,20 @@ class HomeController extends Controller
                       $subcatrory= subcategory::where(['is_deleted'=>0,'category_id'=>$cat['id']])->get()->toArray();
                       if(!empty($subcatrory))
                       {
-                        $category["ISsubCategory"]=true;;
+                        $category["ISsubCategory"]=true;
+                        $category["Isproduct"]=true;
                       }
                       else
                       {
+                        $category["ISsubCategory"]=false;
                         $Product=  item_deatil:: where(['status'=>0,'category_id'=>$cat['id'],'subcategory_id'=>0])->get()->toArray();
                         if(!empty($Product))
                         {
                             $category["Isproduct"]=true;
+                        }
+                        else
+                        {
+                            $category["Isproduct"]=false; 
                         }
                       }
                       $category["category_name"]=$cat['category_name'];
@@ -47,9 +53,14 @@ class HomeController extends Controller
                       array_push($catList,$category);
                   }
               }
+              $collection = collect($catList);
+              $sorted = $collection->sortByDesc('Isproduct');
+                    
+                 $data=   $sorted->values()->all();
+              //print_r($data);
                 $rt['code'] =  200; 
                 $rt['status'] = 'success';
-                $rt['data'] = $catList;
+                $rt['data'] = $data;
         return response()->json($rt);
      }
 
