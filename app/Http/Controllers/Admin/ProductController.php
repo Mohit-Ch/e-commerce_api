@@ -85,15 +85,15 @@ class ProductController extends Controller
                             $additemEdit->itemEditionName = $edit['EditionName'];
                             $additemEdit->price = $edit['price'];
                             $additemEdit->quantity = $edit['quantity'];
-                            $additemEdit->remark = $edit['remark'];
+                            $additemEdit->remark = $edit['Remark'];
                             $additemEdit->save();
                         }
                         else{
                             item_edition::where('id',$edit['id'])->update(
-                                ['itemEditionName'=>$edit['editionName'],
+                                ['itemEditionName'=>$edit['EditionName'],
                                 'price'=>$edit['price'],
                                 'quantity'=>$edit['quantity'],
-                                'remark'=>$edit['remark'] ]);
+                                'remark'=>$edit['Remark'] ]);
         
                         }
                     }

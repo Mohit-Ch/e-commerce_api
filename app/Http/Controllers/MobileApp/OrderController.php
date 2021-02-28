@@ -17,6 +17,7 @@ use App\Models\subcategory;
 use App\Models\users;
 use App\Models\order;
 use DB;
+use Mail;
 
 class OrderController extends Controller {
     //
@@ -419,6 +420,7 @@ class OrderController extends Controller {
                     }
                 }
                 DB::commit();
+                $this->getOrderDetailmail($OrderId, $datarequest['email'], $datarequest['name']);
                 $rt['code'] =  200;
                 $rt['status'] = 'success';
                 $rt['orderId'] = $Order_no;
@@ -427,6 +429,7 @@ class OrderController extends Controller {
                 // something went wrong
                 $rt['code'] =  201;
                 $rt['status'] = 'error';
+                $rt['error'] =  $e;
             }
         } else {
             $rt['code'] =  203;
@@ -508,4 +511,114 @@ class OrderController extends Controller {
         }
         return response()->json( $rt );
     }
+
+      // Get Order Detail 
+      public function getOrderDetailmail($request, $email ,$name)
+      {
+          
+        
+          
+           
+         
+             
+              
+                  // Conformed Order List 
+                  $Order = order:: where('id',$request)->first();
+                 if(!empty($Order)){
+                     $oredertail['id']=$Order['id'];
+                     $oredertail['order_no']=$Order['order_no'];
+                     $oredertail['user_id']=$Order['user_id'];
+                     $oredertail['description']=$Order['description'];
+                     $oredertail['status']=$Order['status'];
+                     $oredertail['type']=$Order['type'];
+ 
+                     $oredertail['Discount']=$Order['Discount'];
+                     $oredertail['product_amount']=$Order['product_amount'];
+                     $oredertail['actual_amount']=$Order['actual_amount'];
+ 
+                     $newOrderArray['address'] = $Order['address'];
+                         if ( $Order['type'] == 'user' ) {
+                             $UserOrder = users::where( ['id'=>$Order['user_id'], 'usertype'=>'User'] )->first();
+                             if ( !empty( $UserOrder ) ) {
+                                 $newOrderArray['userName'] = $Order['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$Order['name'];
+                                 $newOrderArray['phone_no'] = $Order['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$Order['phone_no'];
+                                 $newOrderArray['usertype'] = 'Registered';
+                                 $UserAddress = address::where( ['users_id'=>$Order['user_id'], 'id'=>$Order['address_id']] )->first();
+                                }
+                             else{
+                                 $newOrderArray['userName'] = $Order['name'] ;
+                                 $newOrderArray['phone_no'] = $Order['phone_no'];
+                                 $newOrderArray['usertype'] = 'Gest User';
+                                 $newOrderArray['address'] = $Order['address'];
+                             }
+                         } else {
+                             $UserOrder = guest_user::where( 'id', $Order['user_id'] )->first();
+                             if( !empty( $UserOrder ) ){
+                                 $newOrderArray['userName'] = $Order['name'] == null? $UserOrder['name'] == null?'':$UserOrder['name']:$Order['name'] ;
+                                 $newOrderArray['phone_no'] = $Order['phone_no'] == null? $UserOrder['phone_no'] == null?'':$UserOrder['phone_no']:$Order['phone_no'];
+                                 $newOrderArray['usertype'] = 'Gest User';
+                                 $newOrderArray['address'] = $Order['address'] == null?$UserOrder['address']:$Order['address'];
+                             }
+                             else{
+                                 $newOrderArray['userName'] = $Order['name'] ;
+                                 $newOrderArray['phone_no'] = $Order['phone_no'];
+                                 $newOrderArray['usertype'] = 'Gest User';
+                                 $newOrderArray['address'] = $Order['address'];
+                             }
+                            
+                         }
+ 
+                     // find Item Detail 
+                     $OrderDetail = order_detail::where('order_id',$request)->get()->toArray();
+                     $orderItemList=[];
+                     if(!empty($OrderDetail))
+                     {
+                       
+                         foreach($OrderDetail as $OrderD)
+                         {
+                              
+                             if(!empty($OrderD))
+                             {
+                                 $itemeditiion = item_edition::where('id',$OrderD['itemedition_id'])->first(); 
+                                 if(!empty($itemeditiion))
+                                 {
+                                     $orderItem['quantity']=$OrderD['quantity'];
+                                     $orderItem['price']=$OrderD['price'];
+                                     $orderItem['itemEditionName']=$itemeditiion['itemEditionName'];
+                                     $item = item_deatil::where('id',$itemeditiion['itemDetail_id'])->first(); 
+                                     $orderItem['itemName']=$item['itemName'];
+ 
+                                     $itemImage = item_image_content::where(['itemDetail_id'=>$itemeditiion['itemDetail_id'],'type'=>'main'])->first();    
+                                     if(!empty($itemImage))  {                              
+                                     $orderItem['imageURL']= url('public/item_Image/' . $itemImage['imageURL']);
+                                     }
+                                     else
+                                     {
+                                         $orderItem['imageURL']="";
+                                     }
+                                     array_push($orderItemList,$orderItem);
+                                 }
+                             }
+                         }
+                     }
+                  $oredertail['itemList']=$orderItemList;
+                  
+                  $oredertail['discount']=(string)($oredertail['actual_amount']-$oredertail['product_amount']);
+                  
+                  $data = array('name'=>$name,'email'=>$email,'orderdetail'=>$oredertail,'status'=>3);
+                  //dd($data);
+                  Mail::send(['html'=>'email'], $data, function($message) use($email,$name) {
+                     $message->to($email,$name)->subject
+                        (trans('Order Detail'));
+                     $message->from('manreshyadav@gmail.com','Jain Hardware support');
+                  });
+                  
+                 // dd($data);
+                 }
+                 
+              
+              
+          
+          return true;
+      }
 }
