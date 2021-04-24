@@ -133,7 +133,7 @@ class HomeController extends Controller
                        $data["itemName"]=$item["itemName"];
                        $data["EditionType"]=$item["EditionType"];
                        $data["id"]=$item["id"];
-                        $itemedition=item_edition:: where(['itemDetail_id'=>$item['id']])->get()->toArray();
+                        $itemedition=item_edition:: where(['itemDetail_id'=>$item['id'],'is_deleted'=>0])->get()->toArray();
                         if(!empty($itemedition))
                         {
                             $data["Edition"]=$itemedition;
@@ -201,7 +201,7 @@ class HomeController extends Controller
           {
                  // category_media
                  $ItemDetail = item_deatil:: where('id',$datarequest['id'])->first();
-                 $Itemedition = item_edition:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
+                 $Itemedition = item_edition:: where(['itemDetail_id'=>$datarequest['id'],'is_deleted'=>0])->get()->toArray();
                  $ItemInfo = item_details_attributes:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
                  $ItemImage = item_image_content:: where('itemDetail_id',$datarequest['id'])->orderBy('type', 'asc')->get()->toArray();
                  $ItemImageList=[];

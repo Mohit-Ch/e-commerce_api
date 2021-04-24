@@ -40,7 +40,7 @@ class PastOrderController extends Controller
               $productList=[];
               if($data['api_token']!="")
               {
-                $OrderList = order:: where(['user_id'=>$userdata['id'],'deviceId'=>$data['deviceId']])->get()->toArray();
+                $OrderList = order:: where(['user_id'=>$userdata['id']])->orWhere('deviceId',$data['deviceId'])->get()->toArray();
               }else{
                 $OrderList = order:: where(['deviceId'=>$data['deviceId']])->get()->toArray();
               }
@@ -70,6 +70,8 @@ class PastOrderController extends Controller
                                     $data["id"]=$item["id"];
                                     $data["quantity"]=$ListDetail["quantity"];
                                     $data["price"]=$ListDetail["price"];
+                                    $data["status"]=$OrderList["status"];
+                                    $data["orderNo"]=$OrderList["order_no"];
                                     if(!empty($itemEdition))
                                     {
                                         $data["Edition"]=$itemEdition;

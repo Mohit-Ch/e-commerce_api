@@ -101,7 +101,7 @@ class UsersController extends Controller {
                 if ( $data['status'] == 'active' ) {
                     users::where( ['id'=>$data['id'], 'usertype'=>'User', 'is_active'=>0 ] )->update( ['is_active'=>1] );
                 } else {
-                    users::where( ['id'=>$data['id'], 'usertype'=>'User', 'is_active'=>0 ] )->update( ['is_active'=>2] );
+                    users::where( ['id'=>$data['id'], 'usertype'=>'User' ] )->update( ['is_active'=>2] );
                 }
 
                 $rt['code'] =  200;

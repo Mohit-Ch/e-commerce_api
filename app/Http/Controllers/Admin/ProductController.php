@@ -176,7 +176,7 @@ class ProductController extends Controller
 
             if(!empty($data['removeEdition']))
             {
-                foreach($data['editionList'] as $edit)
+                foreach($data['removeEdition'] as $edit)
                 {
                         item_edition::where('id',$edit)->update(
                             ['is_deleted'=>1 ]);
@@ -287,7 +287,7 @@ class ProductController extends Controller
              {
                 ///category_media
                 $ItemDetail = item_deatil:: where('id',$datarequest['id'])->first();
-                $Itemedition = item_edition:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
+                $Itemedition = item_edition:: where(['itemDetail_id'=>$datarequest['id'],'is_deleted'=>0 ])->get()->toArray();
                 $ItemInfo = item_details_attributes:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
                 $ItemImage = item_image_content:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
                 $ItemImageList=[];
