@@ -133,10 +133,11 @@ class HomeController extends Controller
                        $data["itemName"]=$item["itemName"];
                        $data["EditionType"]=$item["EditionType"];
                        $data["id"]=$item["id"];
-                        $itemedition=item_edition:: where(['itemDetail_id'=>$item['id'],'is_deleted'=>0])->get()->toArray();
+                        $itemedition=item_edition:: where(['itemDetail_id'=>$item['id'],'is_deleted'=>0])->where('quantity','>',0)->get()->toArray();
+                        $Itemeditionequle0 = item_edition:: where(['itemDetail_id'=>$item['id'],'is_deleted'=>0])->where('quantity',0)->get()->toArray();
                         if(!empty($itemedition))
                         {
-                            $data["Edition"]=$itemedition;
+                            $data["Edition"]=array_merge($itemedition,$Itemeditionequle0);
                         }
                         else{
                             $data["Edition"]=[]; 
@@ -201,9 +202,10 @@ class HomeController extends Controller
           {
                  // category_media
                  $ItemDetail = item_deatil:: where('id',$datarequest['id'])->first();
-                 $Itemedition = item_edition:: where(['itemDetail_id'=>$datarequest['id'],'is_deleted'=>0])->get()->toArray();
+                 $Itemedition = item_edition:: where(['itemDetail_id'=>$datarequest['id'],'is_deleted'=>0])->where('quantity','>',0)->get()->toArray();
                  $ItemInfo = item_details_attributes:: where('itemDetail_id',$datarequest['id'])->get()->toArray();
                  $ItemImage = item_image_content:: where('itemDetail_id',$datarequest['id'])->orderBy('type', 'asc')->get()->toArray();
+                 $Itemeditionequle0 = item_edition:: where(['itemDetail_id'=>$datarequest['id'],'is_deleted'=>0])->where('quantity',0)->get()->toArray();
                  $ItemImageList=[];
                  if( !empty($ItemImage) ){
                      foreach($ItemImage as $item)
@@ -217,6 +219,10 @@ class HomeController extends Controller
                          $image["id"]=$item["id"];
                          array_push($ItemImageList,$image);
                      }
+                 }
+                 if(!empty($Itemeditionequle0))
+                 {
+                    $Itemedition= array_merge($Itemedition,$Itemeditionequle0);
                  }
  
                  $data['itemDetail']=$ItemDetail;
