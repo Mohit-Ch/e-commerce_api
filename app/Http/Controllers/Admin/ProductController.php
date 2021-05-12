@@ -351,7 +351,7 @@ class ProductController extends Controller
                         $data["itemName"]=$item["itemName"];
                         $data["EditionType"]=$item["EditionType"];
                         $data["id"]=$item["id"];
-                         $itemedition=item_edition:: where(['itemDetail_id'=>$item['id']])->get()->toArray();
+                         $itemedition=item_edition:: where(['itemDetail_id'=>$item['id'],'is_deleted'=>0])->get()->toArray();
                          if(!empty($itemedition))
                          {
                              $data["Edition"]=$itemedition;
